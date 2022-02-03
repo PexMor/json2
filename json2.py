@@ -19,19 +19,20 @@ import datetime as dt
 import json
 import sys
 
-def kk(obj,prefix=()):
-  if obj is None:
-    print(".".join(prefix),f"= -")
-  else:
-    for key in obj.keys():
-      if isinstance(obj[key],(str,int,bool)):
-        print(".".join(prefix+(key,)),f"= {obj[key]}")
-      elif isinstance(obj[key],list):
-        for ii, val in enumerate(obj[key]):
-          kk(val,prefix+(f"{key}[{ii}]",))
-          #print(".".join(prefix+(f"{key}[{ii}]",)),f"= {obj[key]}")
-      elif isinstance(obj[key],object):
-        kk(obj[key],prefix+(key,))
+
+def kk(obj, prefix=()):
+    if obj is None:
+        print(".".join(prefix), f"= -")
+    elif isinstance(obj, (str, int, bool)):
+        print(".".join(prefix), f"= {obj}")
+    else:
+        for key in obj.keys():
+            if isinstance(obj[key], list):
+                for ii, val in enumerate(obj[key]):
+                    kk(val, prefix + (f"{key}[{ii}]",))
+            elif isinstance(obj[key], object):
+                kk(obj[key], prefix + (key,))
+
 
 data = json.load(sys.stdin)
 kk(data)
