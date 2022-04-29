@@ -19,19 +19,35 @@ import datetime as dt
 import json
 import sys
 
+only_keys = True
 
 def kk(obj, prefix=()):
+    global only_keys
     if obj is None:
-        print(".".join(prefix), f"= -")
-    elif isinstance(obj, (str, int, bool)):
-        print(".".join(prefix), f"= {obj}")
+        if only_keys:
+            print(".".join(prefix))
+        else:
+            print(".".join(prefix), f"= -")
+    elif isinstance(obj, (str, int, float, bool)):
+        if only_keys:
+            print(".".join(prefix))
+        else:
+            print(".".join(prefix), f"= {obj}")
     else:
-        for key in obj.keys():
-            if isinstance(obj[key], list):
-                for ii, val in enumerate(obj[key]):
-                    kk(val, prefix + (f"{key}[{ii}]",))
-            elif isinstance(obj[key], object):
-                kk(obj[key], prefix + (key,))
+        try:
+            if isinstance(obj, list):
+                for ii, val in enumerate(obj):
+                    kk(val, prefix + (f"[{ii}]",))
+            elif isinstance(obj, object):
+                for key in obj.keys():
+                    if isinstance(obj[key], list):
+                        for ii, val in enumerate(obj[key]):
+                            kk(val, prefix + (f"{key}[{ii}]",))
+                    elif isinstance(obj[key], object):
+                        kk(obj[key], prefix + (key,))
+        except AttributeError as ex:
+            print("Fatal error parsing the JSON structures: ", ex)
+            sys.exit(-1)
 
 
 data = json.load(sys.stdin)
